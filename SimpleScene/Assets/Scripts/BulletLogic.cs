@@ -16,4 +16,16 @@ public class BulletLogic : MonoBehaviour
             m_rigidBody.velocity = transform.up * m_bulletSpeed;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Target")
+        {
+            // Destroys the target
+            Destroy(other.gameObject);
+
+            //Destroy the bullet
+            Destroy(gameObject);
+        }
+    }
 }
