@@ -31,12 +31,21 @@ public class GunLogic : MonoBehaviour
 
     AudioSource m_audioSource;
 
+    bool m_isEquipped = false;
+
+    Rigidbody m_rigidBody;
+
+    Collider m_collider;
+
     // Start is called before the first frame update
     void Start()
     {
         SetAmmoText();
 
         m_audioSource = GetComponent<AudioSource>();
+
+        m_rigidBody = GetComponent<Rigidbody>();
+        m_collider = GetComponent<Collider>();
     }
 
     void SetAmmoText()
@@ -50,6 +59,11 @@ public class GunLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!m_isEquipped)
+        {
+            return;
+        }
+
         if(m_currentCooldown > 0.0f)
         {
             m_currentCooldown -= Time.deltaTime;
@@ -91,5 +105,35 @@ public class GunLogic : MonoBehaviour
         PlaySound(m_pistolReload);
         m_ammoCount = MAX_AMMO;
         SetAmmoText();
+    }
+
+    public void EquipGun()
+    {
+        m_isEquipped = true;
+
+        if(m_rigidBody)
+        {
+            m_rigidBody.useGravity = false;
+        }
+
+        if(m_collider)
+        {
+            m_collider.enabled = false;
+        }
+    }
+
+    public void UnequipGun()
+    {
+        m_isEquipped = false;
+
+        if (m_rigidBody)
+        {
+            m_rigidBody.useGravity = true;
+        }
+
+        if (m_collider)
+        {
+            m_collider.enabled = true;
+        }
     }
 }

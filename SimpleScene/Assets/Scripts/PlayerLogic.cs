@@ -14,9 +14,16 @@ public class PlayerLogic : MonoBehaviour
     Vector3 m_movementInput;
     Vector3 m_movement;
 
-    float m_jumpHeight = 0.5f;
-    float m_gravity = 0.045f;
+    float m_jumpHeight = 0.6f;
+    float m_gravity = 0.05f;
     bool m_jump = false;
+
+    GameObject m_interactiveObject = null;
+
+    GameObject m_equippedObject = null;
+
+    [SerializeField]
+    Transform m_weaponEquipmentPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +42,40 @@ public class PlayerLogic : MonoBehaviour
         if(!m_jump && Input.GetButtonDown("Jump"))
         {
             m_jump = true;
+        }
+
+        if(m_interactiveObject && Input.GetButtonDown("Fire2"))
+        {
+            if(!m_equippedObject)
+            {
+                GunLogic gunLogic = m_interactiveObject.GetComponent<GunLogic>();
+                if (gunLogic)
+                {
+                    // Sets the position of the gun
+                    m_interactiveObject.transform.position = m_weaponEquipmentPosition.position;
+                    m_interactiveObject.transform.rotation = m_weaponEquipmentPosition.rotation;
+                    m_interactiveObject.transform.parent = gameObject.transform;
+
+                    // Deactivates gravity, deactivates collider
+                    gunLogic.EquipGun();
+
+                    m_equippedObject = m_interactiveObject;
+                }
+            }
+            else if(m_equippedObject)
+            {
+                GunLogic gunLogic = m_equippedObject.GetComponent<GunLogic>();
+                if (gunLogic)
+                {
+                    // Sets the position of the gun
+                    m_equippedObject.transform.parent = null;
+
+                    // Activates gravity, activates collider
+                    gunLogic.UnequipGun();
+
+                    m_equippedObject = null;
+                }
+            }
         }
     }
 
@@ -102,6 +143,22 @@ public class PlayerLogic : MonoBehaviour
         if(m_characterController)
         {
             m_characterController.Move(m_movement);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Weapon")
+        {
+            m_interactiveObject = other.gameObject;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Weapon" && m_interactiveObject == other.gameObject)
+        {
+            m_interactiveObject = null;
         }
     }
 }
