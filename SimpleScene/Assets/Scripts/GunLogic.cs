@@ -14,7 +14,8 @@ public class GunLogic : MonoBehaviour
     const float MAX_COOLDOWN = 0.5f;
     float m_currentCooldown = 0.0f;
 
-    int m_ammoCount = 20;               // number of bullets
+    const int MAX_AMMO = 5;
+    int m_ammoCount = MAX_AMMO;               // number of bullets
 
     [SerializeField]
     Text m_ammoText;
@@ -24,6 +25,9 @@ public class GunLogic : MonoBehaviour
 
     [SerializeField]
     AudioClip m_pistolEmpty;
+
+    [SerializeField]
+    AudioClip m_pistolReload;
 
     AudioSource m_audioSource;
 
@@ -80,5 +84,12 @@ public class GunLogic : MonoBehaviour
         {
             m_audioSource.PlayOneShot(sound);
         }
+    }
+
+    public void RefillAmmo()
+    {
+        PlaySound(m_pistolReload);
+        m_ammoCount = MAX_AMMO;
+        SetAmmoText();
     }
 }
